@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jui - Love Letter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+
+        body {
+            background-color: #05010a;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 2rem;
+            max-width: 650px;
+            width: 90%;
+            background: rgba(15, 5, 25, 0.45);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 105, 180, 0.2);
+            border-radius: 24px;
+            box-shadow: 0 0 40px rgba(255, 20, 147, 0.25);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #ff4d6d;
+            text-shadow: 0 0 15px rgba(255, 77, 109, 0.6);
+            margin-bottom: 0.8rem;
+        }
+
+        p.subtitle {
+            color: #e0aaff;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff007f, #7928ca);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.8);
+        }
+
+        /* Modal styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: rgba(25, 10, 35, 0.95);
+            border: 1px solid #ff4d6d;
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255, 77, 109, 0.4);
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.4s ease;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #ff4d6d;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+
+        .letter-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f3e8ff;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Level Five - Tumi Song Audio Tag -->
+    <audio id="bgMusic" src="music.mp3" preload="auto"></audio>
+
+    <canvas id="heartCanvas"></canvas>
+
+    <div class="container">
+        <h1>জুঁই, তুমি আমার ভালোবাসার অনন্য অনুভূতি ❤️</h1>
+        <p class="subtitle">হৃদয়ের গহীনে তোমাকেই এঁকেছি প্রতিটি স্পন্দনে</p>
+        <button class="btn" onclick="openModal()">আমার বার্তাটি দেখো 💌</button>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-card">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2 style="color: #ff4d6d; margin-bottom: 1rem;">প্রিয় জুঁই,</h2>
+            <div class="letter-content">
+                তুমি আমার জীবনের সেই সুন্দর কবিতা, যা প্রতিদিন নতুন করে ভালোবাসতে শেখায়। আকাশের নক্ষত্রের আলো যেমন রাতকে সুন্দর করে, তেমনি তোমার উপস্থিতি আমার পৃথিবী আলোকময় করে তুলেছে।<br><br>
+                সবসময় এভাবে আমার পাশে থেকো। ভালোবাসি তোমাকে! ❤️
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Dynamic Heart Particles
+        const particles = [];
+        const particleCount = 600;
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.t = Math.random() * Math.PI * 2;
+                const x = 16 * Math.pow(Math.sin(this.t), 3);
+                const y = -(13 * Math.cos(this.t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+
+                const scale = Math.min(canvas.width, canvas.height) / 45;
+                this.baseX = canvas.width / 2 + x * scale;
+                this.baseY = canvas.height / 2 + y * scale;
+
+                this.x = this.baseX + (Math.random() - 0.5) * 30;
+                this.y = this.baseY + (Math.random() - 0.5) * 30;
+                this.size = Math.random() * 2 + 1;
+                this.alpha = Math.random() * 0.8 + 0.2;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (Math.abs(this.x - this.baseX) > 25 || Math.abs(this.y - this.baseY) > 25) {
+                    this.speedX *= -1;
+                    this.speedY *= -1;
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(255, 20, 147, ${this.alpha})`;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#ff007f';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(5, 1, 10, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Audio controls for modal
+        const music = document.getElementById('bgMusic');
+
+        function openModal() {
+            document.getElementById('modalOverlay').classList.add('active');
+            if (music) {
+                music.currentTime = 0; // গানটি শুরু থেকে বাজবে
+                music.play().catch(e => console.log("Audio play error:", e));
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            if (music) {
+                music.pause(); // পপআপ বন্ধ করলে গানটি থেমে যাবে
+            }
+        }
+    </script>
+</body>
+</html>
