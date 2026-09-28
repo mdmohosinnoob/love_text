@@ -184,7 +184,7 @@
             reset() {
                 this.t = Math.random() * Math.PI * 2;
                 const x = 16 * Math.pow(Math.sin(this.t), 3);
-                const y = -(13 * Math.cos(this.t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+                const y = -(13 * Math.cos(this.t) - 5 * Math.cos(2 * this.t) - 2 * Math.cos(3 * this.t) - Math.cos(4 * this.t));
 
                 const scale = Math.min(canvas.width, canvas.height) / 45;
                 this.baseX = canvas.width / 2 + x * scale;
@@ -240,7 +240,7 @@
         function openModal() {
             document.getElementById('modalOverlay').classList.add('active');
             if (music) {
-                music.currentTime = 0; // গানটি শুরু থেকে বাজবে
+                music.currentTime = 0;
                 music.play().catch(e => console.log("Audio play error:", e));
             }
         }
@@ -248,7 +248,7 @@
         function closeModal() {
             document.getElementById('modalOverlay').classList.remove('active');
             if (music) {
-                music.pause(); // পপআপ বন্ধ করলে গানটি থেমে যাবে
+                music.pause();
             }
         }
     </script>
